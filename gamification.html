@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>祇園文化探險家 - 遊戲化學習</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 樣式與首頁相同，但新增遊戲化學習專用樣式 */
+        :root {
+            --primary-red: #dc3545;
+            --primary-pink: #ff6b8b;
+            --primary-blue: #3498db;
+            --primary-green: #2ecc71;
+            --primary-purple: #9b59b6;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #16213e;
+            --card-bg: rgba(30, 30, 60, 0.9);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        /* 導航欄 */
+        .navbar {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary-red);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-pink));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: white;
+            background: rgba(220, 53, 69, 0.2);
+        }
+        
+        .nav-link.active {
+            color: white;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        /* 主容器 */
+        .main-container {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* 遊戲化學習區域 */
+        .gamification-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+            border: 2px solid rgba(46, 204, 113, 0.3);
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+            color: white;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            border-radius: 2px;
+        }
+        
+        .game-intro {
+            text-align: center;
+            color: #bdc3c7;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* 遊戲機制卡片 */
+        .game-mechanic-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .mechanic-card {
+            background: rgba(20, 20, 40, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .mechanic-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(46, 204, 113, 0.4);
+            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
+        }
+        
+        .mechanic-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-green);
+        }
+        
+        .mechanic-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .mechanic-description {
+            color: #bdc3c7;
+            line-height: 1.5;
+        }
+        
+        /* 關卡流程 */
+        .game-levels-container {
+            margin-top: 60px;
+        }
+        
+        .level-card {
+            background: rgba(20, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary-blue);
+            transition: all 0.3s ease;
+        }
+        
+        .level-card:hover {
+            transform: translateX(10px);
+            background: rgba(52, 152, 219, 0.1);
+        }
+        
+        .level-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .level-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(to right, var(--primary-blue), #2980b9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .level-title {
+            font-size: 1.4rem;
+            color: white;
+        }
+        
+        .level-description {
+            color: #bdc3c7;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .level-details {
+            color: #95a5a6;
+            font-size: 0.9rem;
+            padding-left: 20px;
+        }
+        
+        /* 道具系統 */
+        .props-section {
+            margin-top: 60px;
+            padding: 30px;
+            background: rgba(20, 20, 40, 0.5);
+            border-radius: 15px;
+            border: 2px solid rgba(155, 89, 182, 0.3);
+        }
+        
+        .props-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .prop-card {
+            background: rgba(30, 30, 60, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(155, 89, 182, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .prop-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(155, 89, 182, 0.4);
+        }
+        
+        .prop-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-purple);
+        }
+        
+        .prop-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        /* 遊戲目標 */
+        .game-goals {
+            margin-top: 60px;
+            padding: 30px;
+            background: rgba(40, 40, 80, 0.5);
+            border-radius: 15px;
+            border: 2px solid rgba(220, 53, 69, 0.3);
+            text-align: center;
+        }
+        
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(20, 20, 40, 0.5);
+            border-radius: 10px;
+        }
+        
+        .goal-icon {
+            font-size: 1.5rem;
+            color: var(--primary-red);
+        }
+        
+        /* 支援系統 */
+        .support-system {
+            margin-top: 60px;
+        }
+        
+        .support-card {
+            background: rgba(20, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary-pink);
+            transition: all 0.3s ease;
+        }
+        
+        .support-card:hover {
+            transform: translateX(10px);
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+        /* 快速啟動指南 */
+        .quick-start {
+            margin-top: 60px;
+            padding: 30px;
+            background: linear-gradient(145deg, rgba(40, 40, 80, 0.7), rgba(30, 30, 60, 0.7));
+            border-radius: 15px;
+            border: 2px solid rgba(241, 196, 15, 0.3);
+            text-align: center;
+        }
+        
+        .start-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .start-card {
+            background: rgba(20, 20, 40, 0.5);
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.4);
+        }
+        
+        /* 頁腳 */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(220, 53, 69, 0.2);
+            color: #bdc3c7;
+            margin-top: 60px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        /* 返回首頁按鈕 */
+        .back-home {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .back-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-home-btn:hover {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: rgba(52, 152, 219, 0.5);
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 1024px) {
+            .game-mechanic-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .props-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .start-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .game-mechanic-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .props-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-container {
+                padding: 20px;
+            }
+            
+            .gamification-section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo-img">🎮</div>
+            <div class="logo-text">祇園文化獵人</div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">首頁</a>
+            <a href="vocabulary.html" class="nav-link">詞彙表</a>
+            <a href="resources.html" class="nav-link">學習資源</a>
+            <a href="gamification.html" class="nav-link active">遊戲化學習</a>
+            <a href="features.html" class="nav-link">平台特色</a>
+        </div>
+    </nav>
+
+    <!-- 主內容 -->
+    <div class="main-container">
+        <!-- 返回首頁按鈕 -->
+        <div class="back-home">
+            <a href="index.html" class="back-home-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回首頁
+            </a>
+        </div>
+        
+        <!-- 遊戲化學習區域 -->
+        <section class="gamification-section">
+            <h2 class="section-title">祇園文化獵人 - 遊戲化學習系統</h2>
+            
+            <div class="game-intro">
+                將傳統文化學習流程轉化為完整的沉浸式遊戲體驗，透過「手機為主戰場，電腦為後台支援」的模式，
+                讓您能在5分鐘一關、10關完成的文化之旅中，深度探索京都祇園的歷史、藝術與生活文化。
+            </div>
+
+            <!-- 遊戲核心機制 -->
+            <h3 style="color: white; margin-bottom: 30px; font-size: 1.8rem; text-align: center;">
+                遊戲核心機制設計
+            </h3>
+            
+            <div class="game-mechanic-grid">
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">
+                        <i class="fas fa-level-up-alt"></i>
+                    </div>
+                    <h4 class="mechanic-title">等級系統</h4>
+                    <p class="mechanic-description">
+                        新手文化獵人 → 祇園守護者<br>
+                        通過10個關卡逐步升級，每關解鎖新能力與成就
+                    </p>
+                </div>
+                
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4 class="mechanic-title">計分機制</h4>
+                    <p class="mechanic-description">
+                        每正確文化詞 +50分<br>
+                        每篇心得 +100分<br>
+                        即時反饋激發學習動力
+                    </p>
+                </div>
+                
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">
+                        <i class="fas fa-toolbox"></i>
+                    </div>
+                    <h4 class="mechanic-title">道具系統</h4>
+                    <p class="mechanic-description">
+                        相機翻譯器（無限使用）<br>
+                        文化筆記本（Anki同步）<br>
+                        搜尋羅盤（Google搜尋）
+                    </p>
+                </div>
+            </div>
+
+            <!-- 10關遊戲流程 -->
+            <div class="game-levels-container">
+                <h3 style="color: white; margin-bottom: 30px; font-size: 1.8rem; text-align: center;">
+                    10關遊戲流程詳細說明
+                </h3>
+                
+                <div class="level-card">
+                    <div class="level-header">
+                        <div class="level-number">1</div>
+                        <h4 class="level-title">街景獵詞</h4>
+                    </div>
+                    <p class="level-description">
+                        使用Google Maps街景尋找日文招牌，掃描並記錄文化詞彙。
+                        任務：抄低5個日文詞 → Anki新建卡片
+                    </p>
+                    <div class="level-details">
+                        ✓ 開Google Maps → 京都祇園（35.0036° N, 135.7750° E）<br>
+                        ✓ 用街景慢慢行，搵第一間有日文招牌嘅店舖<br>
+                        ✓ 用Google Lens掃描招牌 → 截圖儲存<br>
+                        ✓ 成就解鎖：街景獵人 Lv.1（+50分）
+                    </div>
+                </div>
+                
+                <div class="level-card">
+                    <div class="level-header">
+                        <div class="level-number">2-5</div>
+                        <h4 class="level-title">文化詞典大挑戰</h4>
+                    </div>
+                    <p class="level-description">
+                        每關主題不同，探索不同文化領域：
+                    </p>
+                    <div class="level-details">
+                        ✨ 第2關：和服文化（振袖、帯、草履）<br>
+                        ✨ 第3關：神社文化（お守り、絵馬、手水舎）<br>
+                        ✨ 第4關：飲食文化（懐石、湯葉、京野菜）<br>
+                        ✨ 第5關：表演藝術（地唄、花柳流、狂言）<br>
+                        ✓ 成就解鎖：祇園詞典達人（+250分）
+                    </div>
+                </div>
+                
+                <div class="level-card">
+                    <div class="level-header">
+                        <div class="level-number">6-9</div>
+                        <h4 class="level-title">文化解謎</h4>
+                    </div>
+                    <p class="level-description">
+                        從日本人角度理解詞彙背後的價值觀，撰寫文化心得
+                    </p>
+                    <div class="level-details">
+                        ✓ 用電腦Google搜尋學到的3個詞 +「文化」<br>
+                        ✓ 從日本人角度理解：詞彙背後的價值觀是什麼？<br>
+                        ✓ 遊戲規則：每詞寫1句心得（20字內）<br>
+                        ✓ 文化洞察：空間劃分反映日本社會結構<br>
+                        ✓ 成就解鎖：文化解碼者（+400分）
+                    </div>
+                </div>
+                
+                <div class="level-card">
+                    <div class="level-header">
+                        <div class="level-number">10</div>
+                        <h4 class="level-title">祇園文化總結王</h4>
+                    </div>
+                    <p class="level-description">
+                        整合所有心得，撰寫祇園文化總結，成為「祇園文化守護者」
+                    </p>
+                    <div class="level-details">
+                        ✓ 整合9關心得 → 寫100字祇園文化總結<br>
+                        ✓ 格式要求：提煉核心文化價值觀<br>
+                        ✓ 文化總結示例：祇園唔單止係觀光區，係日本人「美意識」「禮儀」「時間觀」嘅縮影<br>
+                        ✓ 成就解鎖：祇園文化守護者（+500分 + 完成證書）
+                    </div>
+                </div>
+            </div>
+
+            <!-- 道具系統 -->
+            <div class="props-section">
+                <h3 style="color: white; margin-bottom: 20px; font-size: 1.8rem; text-align: center;">
+                    道具系統
+                </h3>
+                <p style="text-align: center; color: #bdc3c7; margin-bottom: 30px;">
+                    遊戲中使用的各種道具，幫助您更有效地探索祇園文化
+                </p>
+                
+                <div class="props-grid">
+                    <div class="prop-card">
+                        <div class="prop-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h4 class="prop-title">相機翻譯器</h4>
+                        <p style="color: #bdc3c7;">
+                            無限使用，隨時掃描日文招牌進行翻譯
+                        </p>
+                    </div>
+                    
+                    <div class="prop-card">
+                        <div class="prop-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h4 class="prop-title">文化筆記本</h4>
+                        <p style="color: #bdc3c7;">
+                            Anki同步，自動記錄學習的詞彙和心得
+                        </p>
+                    </div>
+                    
+                    <div class="prop-card">
+                        <div class="prop-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h4 class="prop-title">搜尋羅盤</h4>
+                        <p style="color: #bdc3c7;">
+                            Google搜尋，深入探索文化詞彙的背景和意義
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 遊戲目標 -->
+            <div class="game-goals">
+                <h3 style="color: white; margin-bottom: 30px; font-size: 1.8rem;">
+                    遊戲目標
+                </h3>
+                
+                <div class="goal-item">
+                    <div class="goal-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div style="color: #bdc3c7;">
+                        收集50個文化詞彙
+                    </div>
+                </div>
+                
+                <div class="goal-item">
+                    <div class="goal-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div style="color: #bdc3c7;">
+                        撰寫10篇文化心得
+                    </div>
+                </div>
+                
+                <div class="goal-item">
+                    <div class="goal-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div style="color: #bdc3c7;">
+                        成為「祇園文化守護者」
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; color: #95a5a6;">
+                    10關內完成祇園文化探索，獲得完整遊戲體驗
+                </div>
+            </div>
+
+            <!-- 支援系統 -->
+            <div class="support-system">
+                <h3 style="color: white; margin-bottom: 30px; font-size: 1.8rem; text-align: center;">
+                    支援系統介紹
+                </h3>
+                
+                <div class="support-card">
+                    <h4 style="color: white; margin-bottom: 15px; font-size: 1.3rem;">
+                        文化筆記本（Notion模板）
+                    </h4>
+                    <div style="color: #bdc3c7; line-height: 1.6;">
+                        📁 祇園文化獵人 - 任務進度<br>
+                        └── 📱 手機抄詞（Anki同步）<br>
+                        ├── 關卡1：茶屋、芸者、舞妓...<br>
+                        └── 🔍 電腦搜尋心得<br>
+                        └── ✍️ 文化觀察牆<br>
+                        ├── 茶屋 = 空間美學<br>
+                        └── お守り = 有形心安<br>
+                        └── 🏆 成就牆（貼徽章）
+                    </div>
+                </div>
+                
+                <div class="support-card">
+                    <h4 style="color: white; margin-bottom: 15px; font-size: 1.3rem;">
+                        自動計分系統（Google Sheets）
+                    </h4>
+                    <div style="color: #bdc3c7; line-height: 1.6;">
+                        ✓ 自動追蹤遊戲進度<br>
+                        ✓ 計算每關得分和總分<br>
+                        ✓ 顯示心得質量評分<br>
+                        ✓ 總分計算：1050/1200 | 祇園守護者
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速啟動指南 -->
+            <div class="quick-start">
+                <h3 style="color: white; margin-bottom: 30px; font-size: 1.8rem;">
+                    遊戲啟動準備指南
+                </h3>
+                
+                <div class="start-grid">
+                    <div class="start-card">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 15px;">手機準備</h4>
+                        <ul style="color: #bdc3c7; list-style: none; padding-left: 0;">
+                            <li>✓ Google Maps（離線地圖已下載）</li>
+                            <li>✓ Google Lens（相機翻譯）</li>
+                            <li>✓ Anki（新建牌組「祇園文化獵人」）</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="start-card">
+                        <h4 style="color: var(--primary-green); margin-bottom: 15px;">電腦準備</h4>
+                        <ul style="color: #bdc3c7; list-style: none; padding-left: 0;">
+                            <li>✓ 開Notion新頁「祇園文化獵人」</li>
+                            <li>✓ 開Google Sheets「文化獵人計分板」</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 40px; color: #bdc3c7;">
+                    ⏰ 14:30 開始 → 15:00 第1關完成<br>
+                    🎮 第一成就：街景獵人 Lv.1 解鎖！
+                </div>
+                
+                <div style="margin-top: 40px;">
+                    <a href="resources.html" class="btn btn-primary">
+                        <i class="fas fa-gamepad"></i>
+                        準備工具並開始遊戲
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 頁腳 -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="index.html" class="footer-link">返回首頁</a>
+            <a href="vocabulary.html" class="footer-link">詞彙表</a>
+            <a href="resources.html" class="footer-link">學習資源</a>
+            <a href="gamification.html" class="footer-link">遊戲化學習</a>
+            <a href="features.html" class="footer-link">平台特色</a>
+        </div>
+        <p style="margin-bottom: 20px; font-size: 1.1rem;">
+            祇園文化獵人 | 遊戲化學習系統
+        </p>
+        <p style="color: #6c757d; font-size: 0.9rem;">
+            © 2024 遊戲化文化學習計畫 | 10關完整體驗 | 設計理念：將學習轉化為遊戲
+        </p>
+    </footer>
+
+    <script>
+        // 關卡卡片互動效果
+        document.querySelectorAll('.level-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const number = this.querySelector('.level-number');
+                number.style.transform = 'scale(1.1)';
+                number.style.boxShadow = '0 0 20px rgba(52, 152, 219, 0.5)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const number = this.querySelector('.level-number');
+                number.style.transform = 'scale(1)';
+                number.style.boxShadow = 'none';
+            });
+        });
+        
+        // 道具卡片互動效果
+        document.querySelectorAll('.prop-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.prop-icon');
+                icon.style.transform = 'scale(1.3) rotate(10deg)';
+                icon.style.color = '#ff6b8b';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.prop-icon');
+                icon.style.transform = 'scale(1) rotate(0deg)';
+                icon.style.color = '#9b59b6';
+            });
+        });
+        
+        // 遊戲機制卡片互動效果
+        document.querySelectorAll('.mechanic-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = this.querySelector('.mechanic-title').textContent;
+                
+                // 視覺反饋
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+                this.style.boxShadow = '0 15px 30px rgba(46, 204, 113, 0.3)';
+                
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-10px)';
+                }, 150);
+            });
+        });
+        
+        // 導航連結互動效果
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
