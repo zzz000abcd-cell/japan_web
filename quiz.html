@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>日本文化測試（含日文發聲）</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(rgba(255, 228, 225, 0.8), rgba(255, 255, 255, 0.8)),
+                  url('https://images.unsplash.com/photo-1555742004-176c40d79662?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mjd8fHRvcmlpJTIwZ2F0ZXxlbnwwfHwwfDE2OTAxOTk5ODg&ixlib=rb-1.2.1&q=80&w=1080') no-repeat center center fixed;
+      background-size: cover;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .quiz-container {
+      max-width: 760px;
+      margin: 20px auto;
+      background-color: rgba(255,255,255,0.94);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    h1 { text-align:center; color:#4A2C2A; margin-top:0; }
+    .question { margin-bottom: 18px; font-size:1.15rem; }
+    .options { list-style:none; padding:0; margin:0; }
+    .options li {
+      background:#f7f7f7;
+      margin:8px 0;
+      padding:14px;
+      border-radius:8px;
+      cursor:pointer;
+      transition: all .18s ease;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .options li:hover { transform: translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,0.06); }
+    .options li.selected { background:#28a745; color:#fff; }
+    .play-icon {
+      width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.06);display:inline-flex;
+      align-items:center;justify-content:center;font-weight:bold;color:#333;margin-left:8px;
+    }
+    #controls { display:flex; gap:12px; margin-top:14px; }
+    button {
+      padding:12px 14px;border-radius:8px;border:none;background:#28a745;color:#fff;font-size:1rem;cursor:pointer;
+    }
+    button.secondary { background:#6c757d; }
+    #progress { text-align:center; margin:12px 0; color:#333; }
+    .summary { margin-top:18px; }
+    @media (max-width:600px){
+      .quiz-container { padding:14px; margin:10px; }
+      .options li { padding:12px; font-size:0.98rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>日本文化測試（含日文發聲）</h1>
+    <div id="quiz"></div>
+    <div id="progress"></div>
+    <div id="controls">
+      <button id="submit">提交</button>
+      <button id="restart" class="secondary" style="display:none;">返回首頁</button>
+      <button id="replay" class="secondary">重播題目語音</button>
+    </div>
+    <div id="result" style="margin-top:12px;"></div>
+    <div id="summary" class="summary"></div>
+  </div>
+
+  <script>
+    // 題庫（中/日對照）
+    const questions = [
+      { question: "日本の首都はどこですか？ (日本的首都是？)", options: ["北京","ソウル","東京","バンコク"], answer:"東京" },
+      { question: "ランタンや花火を灯す祭りはどれですか？ (點燈籠和煙花的節日是？)", options: ["花見","祭り","七夕","盂蘭盆節"], answer:"盂蘭盆節" },
+      { question: "日本の伝統的な衣装は何ですか？ (日本傳統的服裝是？)", options: ["サリー","着物","韓服","旗袍"], answer:"着物" },
+      { question: "発酵大豆から作られた有名な日本料理は何ですか？ (有名的日本料理是從發酵大豆製成的？)", options: ["味噌","壽司","麺類","天ぷら"], answer:"味噌" },
+      { question: "景色や歌舞伎俳優のカラフルな版画で知られる芸術形式は何ですか？ (以多彩的風景和歌舞伎演員的版畫著稱的藝術形式是什麼？)", options: ["生け花","折り紙","浮世絵","書道"], answer:"浮世絵" },
+      { question: "日本の有名な歌舞伎演目の一つは何ですか？ (日本著名的歌舞伎作品之一是什麼？)", options: ["三人吉三","西遊記","ハムレット","ロミオとジュリエット"], answer:"三人吉三" },
+      { question: "日本の最も有名な山は何ですか？ (日本最著名的山是什麼？)", options: ["九州山","富士山","穂高岳","剣岳"], answer:"富士山" },
+      { question: "日本の伝統的な茶道は何を重視しますか？ (日本的傳統茶道重視什麼？)", options: ["速さ","見た目","心","材料"], answer:"心" },
+      { question: "寿司の基本的な材料は何ですか？ (壽司的基本材料是什麼？)", options: ["米","パン","麺","野菜"], answer:"米" },
+      { question: "日本の新年の伝統的な行事は何ですか？ (日本的新年傳統活動是什麼？)", options: ["お盆","七夕","正月","花見"], answer:"正月" }
+    ];
+
+    const quizContainer = document.getElementById('quiz');
+    const progressContainer = document.getElementById('progress');
+    const resultContainer = document.getElementById('result');
+    const summaryContainer = document.getElementById('summary');
+    const submitButton = document.getElementById('submit');
+    const restartButton = document.getElementById('restart');
+    const replayButton = document.getElementById('replay');
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    const userAnswers = [];
+
+    // Web Speech API helpers
+    let voices = [];
+    function loadVoices() {
+      voices = speechSynthesis.getVoices() || [];
+      // Try to prefer a Japanese voice
+      // No action here; selection happens when speaking
+    }
+    // load voices initially and also onvoiceschanged
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    function speakText(text, lang='ja-JP', rate=1) {
+      if (!('speechSynthesis' in window)) return;
+      // stop any current speech
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+      utter.rate = rate;
+      // select a voice that best matches the language if available
+      const voice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja')) ||
+                    voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja-jp')) ||
+                    voices[0];
+      if (voice) utter.voice = voice;
+      window.speechSynthesis.speak(utter);
+      return utter;
+    }
+
+    function stopSpeaking() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function buildQuiz() {
+      const q = questions[currentQuestionIndex];
+      const optionsHtml = q.options.map((opt, idx) => {
+        // include a small play control for each option
+        return `<li data-answer="${escapeHtml(opt)}" data-idx="${idx}">
+                  <span class="opt-text">${escapeHtml(opt)}</span>
+                  <span class="play-icon" title="播放語音" data-idx="${idx}">🔊</span>
+                </li>`;
+      }).join('');
+      quizContainer.innerHTML = `<div class="question"><p>${escapeHtml(q.question)}</p></div>
+                                 <ul class="options">${optionsHtml}</ul>`;
+      updateProgress();
+      attachOptionListeners();
+      // auto speak question and options sequentially
+      autoSpeakCurrent();
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function updateProgress() {
+      progressContainer.textContent = `問題 ${currentQuestionIndex + 1} / ${questions.length} | 現在的得分: ${score}`;
+    }
+
+    function attachOptionListeners() {
+      const optionEls = quizContainer.querySelectorAll('.options li');
+      optionEls.forEach(li => {
+        li.addEventListener('click', (e) => {
+          // ignore clicks on the play-icon (they have own handler)
+          if (e.target && e.target.classList.contains('play-icon')) return;
+          optionEls.forEach(item => item.classList.remove('selected'));
+          li.classList.add('selected');
+          const answer = li.getAttribute('data-answer');
+          userAnswers[currentQuestionIndex] = answer;
+          // speak the selected option in Japanese
+          speakText(normalizeForSpeech(answer));
+        });
+        const playBtn = li.querySelector('.play-icon');
+        if (playBtn) {
+          playBtn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const idx = playBtn.getAttribute('data-idx');
+            const text = questions[currentQuestionIndex].options[Number(idx)];
+            speakText(normalizeForSpeech(text));
+          });
+        }
+      });
+    }
+
+    // normalize text for better Japanese TTS (e.g., convert some Chinese/kana mix if needed)
+    function normalizeForSpeech(text) {
+      // If the text contains Kanji/Kana or Japanese words, use as-is.
+      // For Chinese-only items (like "北京") it's okay — voice may attempt reading.
+      // Could map some items to full Japanese reading if desired.
+      return text;
+    }
+
+    // Read question and each option sequentially with small delays
+    async function autoSpeakCurrent() {
+      if (!('speechSynthesis' in window)) return;
+      stopSpeaking();
+      const q = questions[currentQuestionIndex];
+      // speak the question first
+      speakText(q.question, 'ja-JP', 1);
+      // after a short delay, speak options one by one
+      // We'll wait for about 1.6s then speak each option spaced by 900ms
+      // This is approximate — speechSynthesis doesn't provide exact end callbacks in all browsers
+      const baseDelay = 1600;
+      q.options.forEach((opt, i) => {
+        setTimeout(() => {
+          speakText(opt, 'ja-JP', 1);
+        }, baseDelay + i * 900);
+      });
+    }
+
+    function showResult() {
+      // get selected from DOM (if user didn't click but we have userAnswers stored, use that)
+      const selectedEl = quizContainer.querySelector('.options li.selected');
+      const selectedValue = selectedEl ? selectedEl.getAttribute('data-answer') : userAnswers[currentQuestionIndex] || null;
+      userAnswers[currentQuestionIndex] = selectedValue;
+
+      if (selectedValue && selectedValue === questions[currentQuestionIndex].answer) {
+        score++;
+      }
+      stopSpeaking();
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        buildQuiz();
+      } else {
+        displayFinalResults();
+      }
+    }
+
+    function displayFinalResults() {
+      resultContainer.textContent = `你得分 ${score} / ${questions.length}`;
+      quizContainer.style.display = 'none';
+      submitButton.style.display = 'none';
+      replayButton.style.display = 'none';
+      restartButton.style.display = 'inline-block';
+      progressContainer.style.display = 'none';
+
+      let summaryHtml = '<h2>結果摘要</h2><ul>';
+      questions.forEach((q, idx) => {
+        const ua = userAnswers[idx] || '未選擇';
+        const isCorrect = ua === q.answer;
+        summaryHtml += `<li>問題 ${idx+1}: ${escapeHtml(q.question)}<br>
+                        你回答: ${escapeHtml(ua)}<br>
+                        正確答案: ${escapeHtml(q.answer)} (${isCorrect ? '正確' : '錯誤'})</li>`;
+      });
+      summaryHtml += '</ul>';
+      summaryContainer.innerHTML = summaryHtml;
+      // read out final score in Japanese briefly
+      speakText(`あなたのスコアは ${score} 点です。`, 'ja-JP', 1);
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      userAnswers.length = 0;
+      quizContainer.style.display = 'block';
+      submitButton.style.display = 'inline-block';
+      replayButton.style.display = 'inline-block';
+      restartButton.style.display = 'none';
+      resultContainer.textContent = '';
+      summaryContainer.innerHTML = '';
+      progressContainer.style.display = 'block';
+      buildQuiz();
+    }
+
+    // replay current question speech
+    function replayCurrentSpeech() {
+      autoSpeakCurrent();
+    }
+
+    // wire buttons
+    submitButton.addEventListener('click', showResult);
+    restartButton.addEventListener('click', restartQuiz);
+    replayButton.addEventListener('click', () => { stopSpeaking(); replayCurrentSpeech(); });
+
+    // initialize
+    buildQuiz();
+
+    // Stop speech when user navigates away or closes
+    window.addEventListener('beforeunload', () => { stopSpeaking(); });
+  </script>
+</body>
+</html>
