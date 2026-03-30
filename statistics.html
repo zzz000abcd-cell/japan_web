@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT通關率統計 | 祇園文化探險家</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --primary-pink: #ff6b8b;
+            --primary-blue: #3498db;
+            --primary-green: #2ecc71;
+            --primary-purple: #9b59b6;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #16213e;
+            --card-bg: rgba(30, 30, 60, 0.9);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary-red);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-pink));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: white;
+            background: rgba(220, 53, 69, 0.2);
+        }
+        
+        .nav-link.active {
+            color: white;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .main-container {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            color: #bdc3c7;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .level-btn {
+            padding: 12px 25px;
+            background: var(--card-bg);
+            border: 2px solid var(--primary-red);
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .level-btn:hover {
+            background: rgba(220, 53, 69, 0.3);
+        }
+        
+        .level-btn.active {
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .chart-wrapper {
+            height: 450px;
+            position: relative;
+        }
+        
+        .table-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+        
+        .table-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .data-table th, .data-table td {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .data-table th {
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .data-table tr:hover {
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+        .data-table td:first-child {
+            font-weight: 600;
+            color: #ff9f43;
+        }
+        
+        .table-note {
+            margin-top: 20px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            text-align: center;
+            font-style: italic;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(220, 53, 69, 0.2);
+            color: #bdc3c7;
+            margin-top: 60px;
+        }
+        
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .main-container {
+                padding: 20px;
+            }
+            
+            .chart-wrapper {
+                height: 350px;
+            }
+            
+            .level-btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo-img">祇</div>
+            <div class="logo-text">祇園文化探險家</div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">首頁</a>
+            <a href="statistics.html" class="nav-link active">統計數據</a>
+            <a href="vocabulary.html" class="nav-link">詞彙表</a>
+            <a href="quiz.html" class="nav-link">日本文化測試</a>
+            <a href="resources.html" class="nav-link">學習資源</a>
+            <a href="gamification.html" class="nav-link">遊戲化學習</a>
+            <a href="features.html" class="nav-link">平台特色</a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <h1 class="page-title">JLPT通關率統計分析</h1>
+        <p class="page-subtitle">分析七種常見日文學習方式對應日本語能力試驗（JLPT）各級別的通關率比較</p>
+        
+        <div class="level-selector">
+            <button class="level-btn active" data-level="N5">N5 通關率</button>
+            <button class="level-btn" data-level="N4">N4 通關率</button>
+            <button class="level-btn" data-level="N3">N3 通關率</button>
+            <button class="level-btn" data-level="N2">N2 通關率</button>
+            <button class="level-btn" data-level="N1">N1 通關率</button>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="passRateChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="table-section">
+            <h2 class="table-title">各學習方式JLPT通關率對照表</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>學習方式</th>
+                        <th>N5</th>
+                        <th>N4</th>
+                        <th>N3</th>
+                        <th>N2</th>
+                        <th>N1</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>自學</td>
+                        <td>70%</td>
+                        <td>50%</td>
+                        <td>30%</td>
+                        <td>15%</td>
+                        <td>5%</td>
+                    </tr>
+                    <tr>
+                        <td>線上課程</td>
+                        <td>85%</td>
+                        <td>65%</td>
+                        <td>45%</td>
+                        <td>25%</td>
+                        <td>10%</td>
+                    </tr>
+                    <tr>
+                        <td>語言學校（國內）</td>
+                        <td>95%</td>
+                        <td>80%</td>
+                        <td>60%</td>
+                        <td>40%</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>語言學校（日本）</td>
+                        <td>98%</td>
+                        <td>90%</td>
+                        <td>75%</td>
+                        <td>60%</td>
+                        <td>40%</td>
+                    </tr>
+                    <tr>
+                        <td>大學/社區課程</td>
+                        <td>90%</td>
+                        <td>70%</td>
+                        <td>50%</td>
+                        <td>30%</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>交換/沉浸式</td>
+                        <td>99%</td>
+                        <td>95%</td>
+                        <td>85%</td>
+                        <td>70%</td>
+                        <td>50%</td>
+                    </tr>
+                    <tr>
+                        <td>家教/一對一</td>
+                        <td>95%</td>
+                        <td>85%</td>
+                        <td>70%</td>
+                        <td>50%</td>
+                        <td>30%</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="table-note">說明：通關率為綜合調查估算值，反映不同學習方式在準備JLPT考試時的效率差異，實際結果會因個人努力程度與學習時間而異。</p>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="index.html" class="footer-link">首頁</a> |
+            <a href="statistics.html" class="footer-link">統計數據</a> |
+            <a href="vocabulary.html" class="footer-link">詞彙表</a> |
+            <a href="quiz.html" class="footer-link">日本文化測試</a> |
+            <a href="resources.html" class="footer-link">學習資源</a> |
+            <a href="gamification.html" class="footer-link">遊戲化學習</a> |
+            <a href="features.html" class="footer-link">平台特色</a>
+        </div>
+        <p style="margin-top: 20px; font-size: 0.9rem;">
+            © 2024 祇園文化探險家 | 統計數據為綜合調查估算值
+        </p>
+    </footer>
+
+    <script>
+        const learningMethods = [
+            '自學',
+            '線上課程',
+            '語言學校（國內）',
+            '語言學校（日本）',
+            '大學/社區課程',
+            '交換/沉浸式',
+            '家教/一對一'
+        ];
+        
+        const passRateData = {
+            N5: [70, 85, 95, 98, 90, 99, 95],
+            N4: [50, 65, 80, 90, 70, 95, 85],
+            N3: [30, 45, 60, 75, 50, 85, 70],
+            N2: [15, 25, 40, 60, 30, 70, 50],
+            N1: [5, 10, 20, 40, 15, 50, 30]
+        };
+        
+        const chartColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#FF9F43', '#A8D8EA'
+        ];
+        
+        let currentLevel = 'N5';
+        let chart;
+        
+        function initChart(level) {
+            const ctx = document.getElementById('passRateChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: learningMethods,
+                    datasets: [{
+                        label: `${level} 通關率 (%)`,
+                        data: passRateData[level],
+                        backgroundColor: chartColors,
+                        borderColor: '#dc3545',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: 'white',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: `各學習方式對應JLPT ${level}通關率比較`,
+                            color: 'white',
+                            font: {
+                                size: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#bdc3c7',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            title: {
+                                display: true,
+                                text: '通關率 (%)',
+                                color: 'white'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#bdc3c7'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            title: {
+                                display: true,
+                                text: '學習方式',
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        initChart(currentLevel);
+        
+        document.querySelectorAll('.level-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.level-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                currentLevel = this.dataset.level;
+                initChart(currentLevel);
+            });
+        });
+    </script>
+</body>
+</html>

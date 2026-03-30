@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學習方式介紹 | 祇園文化探險家</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --primary-pink: #ff6b8b;
+            --primary-blue: #3498db;
+            --primary-green: #2ecc71;
+            --primary-purple: #9b59b6;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #16213e;
+            --card-bg: rgba(30, 30, 60, 0.9);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary-red);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-pink));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: white;
+            background: rgba(220, 53, 69, 0.2);
+        }
+        
+        .nav-link.active {
+            color: white;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .main-container {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            color: #bdc3c7;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .intro-box {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .intro-box p {
+            color: #bdc3c7;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: white;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            border-radius: 2px;
+        }
+        
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .method-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid var(--primary-red);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.2);
+        }
+        
+        .method-card h3 {
+            color: #ff9f43;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .method-card p {
+            color: #bdc3c7;
+            line-height: 1.7;
+        }
+        
+        .method-number {
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .conclusion {
+            background: linear-gradient(145deg, rgba(40, 40, 80, 0.9), rgba(30, 30, 60, 0.9));
+            padding: 35px;
+            border-radius: 20px;
+            margin-top: 40px;
+            border-left: 5px solid #ffcc00;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .conclusion h2 {
+            color: #ffcc00;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+        
+        .conclusion h3 {
+            color: #ff9f43;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .conclusion p {
+            color: #bdc3c7;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .conclusion ul {
+            color: #bdc3c7;
+            margin-left: 20px;
+            line-height: 2;
+        }
+        
+        .conclusion li {
+            margin-bottom: 10px;
+        }
+        
+        .highlight {
+            color: #ff9f43;
+            font-weight: 600;
+        }
+        
+        .stat-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(220, 53, 69, 0.2);
+            color: #bdc3c7;
+            margin-top: 60px;
+        }
+        
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .main-container {
+                padding: 20px;
+            }
+            
+            .method-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo-img">祇</div>
+            <div class="logo-text">祇園文化探險家</div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">首頁</a>
+            <a href="statistics.html" class="nav-link">統計數據</a>
+            <a href="methods.html" class="nav-link active">學習方式</a>
+            <a href="vocabulary.html" class="nav-link">詞彙表</a>
+            <a href="quiz.html" class="nav-link">日本文化測試</a>
+            <a href="resources.html" class="nav-link">學習資源</a>
+            <a href="gamification.html" class="nav-link">遊戲化學習</a>
+            <a href="features.html" class="nav-link">平台特色</a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <h1 class="page-title">日文學習方式介紹</h1>
+        <p class="page-subtitle">了解七種常見日文學習方式的特點與適用對象</p>
+        
+        <div class="intro-box">
+            <p>本報告分析七種常見日文學習方式，並根據各方式對應的日本語能力試驗（JLPT）通關率進行比較。通關率數據為綜合調查估算值，反映不同學習方式在準備JLPT各級考試時的效率差異。選擇適合自己的學習方式，是成功掌握日文的關鍵第一步。</p>
+            <a href="statistics.html" class="stat-link">
+                <i class="fas fa-chart-bar"></i> 查看通關率統計
+            </a>
+        </div>
+        
+        <h2 class="section-title">常見日文學習方式</h2>
+        
+        <div class="method-grid">
+            <div class="method-card">
+                <h3><span class="method-number">1</span> 自學（書籍/線上資源）</h3>
+                <p>使用教科書（如《大家的日本語》）、App（Duolingo、Memrise）、網站（NHK新聞、YouTube教學頻道）。成本低、時間自由，但缺乏系統性指導與互動。適合自律性高的初階學習者。</p>
+            </div>
+            
+            <div class="method-card">
+                <h3><span class="method-number">2</span> 線上課程（平台/直播課）</h3>
+                <p>Coursera、Udemy、台灣的「巨匠日語」等平台，或直播互動課程。有課程結構、可互動，但需固定時間參與。適合希望有系統學習但無法實體上課者。</p>
+            </div>
+            
+            <div class="method-card">
+                <h3><span class="method-number">3</span> 語言學校（國內）</h3>
+                <p>在台灣的日語補習班進行系統化教學。有教師指導、同學互動，能建立完整學習框架。適合希望快速進步、準備留學或工作，時間與資金充裕者。</p>
+            </div>
+            
+            <div class="method-card">
+                <h3><span class="method-number">4</span> 語言學校（日本）</h3>
+                <p>赴日本語言學校（短期/長期）學習。全方位接觸日語環境，進步最快，但需生活適應且成本較高。適合希望全面提升實用能力、有機會長期待在日本者。</p>
+            </div>
+            
+            <div class="method-card">
+                <h3><span class="method-number">5</span> 大學/社區課程</h3>
+                <p>大學選修課、社區大學或文化中心課程。有學分或證書、價格中等、教學較正式。適合學生或一般上班族，希望有長期穩定學習環境者。</p>
+            </div>
+            
+            <div class="method-card">
+                <h3><span class="method-number">6</span> 交換/沉浸式學習</h3>
+                <p>赴日本打工度假、交換學生、工作，在生活中學習。全方位接觸日語環境，進步最快，但需生活適應。適合有機會長期待在日本、希望全面提升實用能力者。</p>
+            </div>
+            
+            <div class="method-card">
+                <h3><span class="method-number">7</span> 家教/一對一教學</h3>
+                <p>線上或實體家教，針對個人需求教學。完全個人化、彈性高、可針對弱點加強，價格較高。適合需要針對性訓練、時間不固定、想快速突破者。</p>
+            </div>
+        </div>
+        
+        <div class="conclusion">
+            <h2>學習方式選擇建議</h2>
+            
+            <h3>初學者（N5~N4）</h3>
+            <p>自學或線上課程即可開始，建立基礎。建議搭配基礎教材與App，培養學習習慣。此階段主要目標是熟悉五十音、基本語法和生活常用詞彙。</p>
+            
+            <h3>中級者（N3~N2）</h3>
+            <p>建議參加語言學校或家教，突破瓶頸。此階段需要系統化文法教學與大量練習，專業指導效果明顯。建議加強聽力訓練和閱讀理解能力。</p>
+            
+            <h3>高級者（N1）</h3>
+            <p>需要沉浸式環境或專業教師指導，加強邏輯與專業讀解。N1考試注重複雜文本理解與邏輯分析，環境與專業教學不可或缺。</p>
+            
+            <h3>圖表分析重點</h3>
+            <ul>
+                <li><span class="highlight">沉浸式學習</span>與<span class="highlight">日本語言學校</span>效果最佳，因環境強迫使用日語。</li>
+                <li><span class="highlight">家教</span>與<span class="highlight">國內語言學校</span>也有不錯效果，因有專業指導。</li>
+                <li><span class="highlight">自學</span>在高級別（N2、N1）通關率最低，因需要較強的聽力、讀解與系統文法訓練。</li>
+                <li>通關率數據顯示，隨著JLPT級別提高，不同學習方式的效果差異越明顯。</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="index.html" class="footer-link">首頁</a> |
+            <a href="statistics.html" class="footer-link">統計數據</a> |
+            <a href="methods.html" class="footer-link">學習方式</a> |
+            <a href="vocabulary.html" class="footer-link">詞彙表</a> |
+            <a href="quiz.html" class="footer-link">日本文化測試</a> |
+            <a href="resources.html" class="footer-link">學習資源</a> |
+            <a href="gamification.html" class="footer-link">遊戲化學習</a> |
+            <a href="features.html" class="footer-link">平台特色</a>
+        </div>
+        <p style="margin-top: 20px; font-size: 0.9rem;">
+            © 2024 祇園文化探險家 | 報告數據為綜合調查估算值
+        </p>
+    </footer>
+</body>
+</html>
