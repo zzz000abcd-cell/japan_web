@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>祇園文化詞彙遊戲</title>
+    <title>祇園文化填空遊戲</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -155,11 +155,6 @@
             margin-bottom: 20px;
         }
         
-        .question-text {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-        }
-        
         .japanese-word {
             font-size: 3rem;
             font-weight: bold;
@@ -170,57 +165,90 @@
             margin-bottom: 10px;
         }
         
-        .hint-text {
+        .sentence-blank {
+            font-size: 1.3rem;
+            margin: 30px 0;
+            line-height: 1.8;
+        }
+        
+        .blank {
+            display: inline-block;
+            min-width: 120px;
+            padding: 8px 15px;
+            margin: 0 5px;
+            background: rgba(52, 152, 219, 0.2);
+            border: 2px dashed var(--primary-blue);
+            border-radius: 8px;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+        
+        .blank.correct {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: var(--primary-green);
+            color: var(--primary-green);
+            border-style: solid;
+        }
+        
+        .blank.wrong {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: var(--primary-red);
+            color: var(--primary-red);
+            border-style: solid;
+        }
+        
+        .option-select {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px 20px;
             font-size: 1.1rem;
-            color: #bdc3c7;
-            font-style: italic;
-        }
-        
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
-        .option-btn {
             background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(52, 152, 219, 0.1));
             border: 2px solid var(--primary-blue);
-            color: white;
-            padding: 20px;
             border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            margin: 20px 0;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+        }
+        
+        .option-select:focus {
+            outline: none;
+            border-color: var(--primary-pink);
+            box-shadow: 0 0 15px rgba(255, 107, 139, 0.3);
+        }
+        
+        .option-select option {
+            background: var(--dark-bg);
+            color: white;
+            padding: 10px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-pink));
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
             font-size: 1.2rem;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
+            margin-top: 20px;
         }
         
-        .option-btn:hover {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.4), rgba(52, 152, 219, 0.2));
+        .submit-btn:hover {
             transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(220, 53, 69, 0.5);
         }
         
-        .option-btn.correct {
-            background: linear-gradient(135deg, var(--primary-green), #27ae60);
-            border-color: var(--primary-green);
-            animation: correctPulse 0.5s;
-        }
-        
-        .option-btn.wrong {
-            background: linear-gradient(135deg, var(--primary-red), #c0392b);
-            border-color: var(--primary-red);
-            animation: shake 0.5s;
-        }
-        
-        @keyframes correctPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
         
         .start-screen, .end-screen {
@@ -266,6 +294,98 @@
             font-weight: bold;
             color: var(--primary-green);
             margin: 30px 0;
+        }
+        
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .popup-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-red);
+        }
+        
+        .popup-overlay.show .popup-card {
+            transform: scale(1);
+        }
+        
+        .popup-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .popup-icon.correct {
+            color: var(--primary-green);
+        }
+        
+        .popup-icon.wrong {
+            color: var(--primary-red);
+        }
+        
+        .popup-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .popup-title.correct {
+            color: var(--primary-green);
+        }
+        
+        .popup-title.wrong {
+            color: var(--primary-red);
+        }
+        
+        .popup-explanation {
+            font-size: 1.1rem;
+            color: #bdc3c7;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .popup-explanation strong {
+            color: white;
+        }
+        
+        .popup-close-btn {
+            background: linear-gradient(135deg, var(--primary-blue), #2980b9);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
         }
         
         .celebration-overlay {
@@ -350,20 +470,21 @@
     <nav class="navbar">
         <div class="logo-container">
             <div class="logo-img">祇</div>
-            <div class="logo-text">祇園文化詞彙遊戲</div>
+            <div class="logo-text">祇園文化填空遊戲</div>
         </div>
         <div class="nav-links">
             <a href="index.html" class="nav-link">首頁</a>
             <a href="vocabulary.html" class="nav-link">詞彙表</a>
-            <a href="vocabulary-game.html" class="nav-link active">詞彙遊戲</a>
+            <a href="vocabulary-game.html" class="nav-link">詞彙遊戲</a>
+            <a href="vocabulary-fill.html" class="nav-link active">填空遊戲</a>
         </div>
     </nav>
     
     <div class="game-container">
         <div class="start-screen" id="startScreen">
-            <h2>🎌 祇園文化詞彙挑戰 🎌</h2>
-            <p>在限時60秒內回答儘可能多的詞彙問題！</p>
-            <p>答對得10分，答錯不扣分</p>
+            <h2>📝 祇園文化填空挑戰 📝</h2>
+            <p>在限時60秒內完成填空題目！</p>
+            <p>答對得10分，答錯顯示解釋</p>
             <button class="start-btn" onclick="startGame()">開始遊戲</button>
         </div>
         
@@ -386,13 +507,14 @@
             <div class="question-card">
                 <div class="question-number" id="questionNumber">問題 1 / 10</div>
                 <div class="japanese-word" id="japaneseWord">茶屋</div>
-                <div class="hint-text" id="hintText">這是什麼意思？</div>
-                <div class="options-grid" id="optionsGrid">
-                    <button class="option-btn" onclick="selectAnswer(0)">選項 A</button>
-                    <button class="option-btn" onclick="selectAnswer(1)">選項 B</button>
-                    <button class="option-btn" onclick="selectAnswer(2)">選項 C</button>
-                    <button class="option-btn" onclick="selectAnswer(3)">選項 D</button>
+                <div class="sentence-blank" id="sentenceBlank">
+                    祇園的<span class="blank">_____</span>是傳統日本茶館，提供茶道體驗。
                 </div>
+                <select class="option-select" id="optionSelect">
+                    <option value="">請選擇答案...</option>
+                </select>
+                <br>
+                <button class="submit-btn" id="submitBtn" onclick="submitAnswer()">提交答案</button>
             </div>
         </div>
         
@@ -406,35 +528,47 @@
         </div>
     </div>
     
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-card">
+            <div class="popup-icon" id="popupIcon">❌</div>
+            <div class="popup-title" id="popupTitle">答錯了！</div>
+            <div class="popup-explanation" id="popupExplanation">
+                正確答案是：<strong>茶屋</strong><br>
+                茶屋是傳統日本茶館，祇園地區的特色建築，提供茶道體驗和藝妓表演。
+            </div>
+            <button class="popup-close-btn" onclick="closePopup()">下一題</button>
+        </div>
+    </div>
+    
     <div class="celebration-overlay" id="celebrationOverlay"></div>
     
     <footer class="footer">
         <div class="footer-links">
             <a href="index.html" class="footer-link">首頁</a>
             <a href="vocabulary.html" class="footer-link">詞彙表</a>
-            <a href="vocabulary-game.html" class="footer-link">詞彙遊戲</a> |
+            <a href="vocabulary-game.html" class="footer-link">詞彙遊戲</a>
             <a href="vocabulary-fill.html" class="footer-link">填空遊戲</a>
         </div>
-        <p class="copyright">© 2026 Lai Yu Hin | 祇園文化詞彙遊戲</p>
+        <p class="copyright">© 2026 Lai Yu Hin | 祇園文化填空遊戲</p>
     </footer>
     
     <script>
         const vocabularyData = [
-            { word: "茶屋", reading: "chaya", meaning: "傳統日本茶館" },
-            { word: "芸者", reading: "geisha", meaning: "藝妓" },
-            { word: "舞妓", reading: "maiko", meaning: "舞妓（藝妓學徒）" },
-            { word: "お守り", reading: "omamori", meaning: "護身符" },
-            { word: "懐石料理", reading: "kaiseki ryōri", meaning: "懷石料理" },
-            { word: "振袖", reading: "furisode", meaning: "長袖和服" },
-            { word: "手水舎", reading: "temizuya", meaning: "淨手處" },
-            { word: "千本格子", reading: "sengakōshi", meaning: "千本格子窗" },
-            { word: "行道", reading: "gyōdō", meaning: "藝妓道" },
-            { word: "お披露目", reading: "ohirōme", meaning: "出道儀式" },
-            { word: "禿", reading: "kamu", meaning: "禿（未成年舞妓）" },
-            { word: "和食", reading: "washoku", meaning: "和食" },
-            { word: "抹茶", reading: "matcha", meaning: "抹茶" },
-            { word: "花道", reading: "kadō", meaning: "花道" },
-            { word: "書道", reading: "shodō", meaning: "書道" }
+            { word: "茶屋", reading: "chaya", meaning: "傳統日本茶館", sentence: "祇園的_____是傳統日本茶館，提供茶道體驗。" },
+            { word: "芸者", reading: "geisha", meaning: "藝妓", sentence: "_____是傳統日本表演藝術家，精通舞蹈、音樂和茶道。" },
+            { word: "舞妓", reading: "maiko", meaning: "舞妓（藝妓學徒）", sentence: "年輕的_____穿著華麗的和服，學習傳統技藝。" },
+            { word: "お守り", reading: "omamori", meaning: "護身符", sentence: "神社出售的_____象徵神明的保護與祝福。" },
+            { word: "懐石料理", reading: "kaiseki ryōri", meaning: "懷石料理", sentence: "_____是傳統的多道菜日本料理，強調季節性和食材原味。" },
+            { word: "振袖", reading: "furisode", meaning: "長袖和服", sentence: "_____是未婚女性在正式場合穿著的華麗和服。" },
+            { word: "手水捨", reading: "temizuya", meaning: "淨手處", sentence: "神社入口處的_____是參拜前淨手淨口的場所。" },
+            { word: "千本格子", reading: "sengakōshi", meaning: "千本格子窗", sentence: "傳統建築的_____是祇園街景的特色裝飾。" },
+            { word: "行道", reading: "gyōdō", meaning: "藝妓道", sentence: "_____是藝妓的職業修養與技藝訓練。" },
+            { word: "お披露目", reading: "ohirōme", meaning: "出道儀式", sentence: "_____標誌著舞妓正式出道成為藝妓。" },
+            { word: "禿", reading: "kamu", meaning: "禿（未成年舞妓）", sentence: "_____是指未成年舞妓，年齡通常在15歲以下。" },
+            { word: "抹茶", reading: "matcha", meaning: "抹茶", sentence: "茶道中使用的粉末茶稱為_____" },
+            { word: "花道", reading: "kadō", meaning: "花道", sentence: "_____是日本傳統插花藝術。" },
+            { word: "書道", reading: "shodō", meaning: "書道", sentence: "_____是日本傳統書法藝術。" },
+            { word: "和食", reading: "washoku", meaning: "和食", sentence: "_____於2013年被列為聯合國非物質文化遺產。" }
         ];
         
         let currentQuestion = 0;
@@ -509,13 +643,7 @@
         
         function generateQuestions() {
             const shuffled = shuffleArray(vocabularyData);
-            gameQuestions = shuffled.slice(0, 10).map(correct => {
-                const wrongAnswers = shuffleArray(vocabularyData.filter(v => v.word !== correct.word))
-                    .slice(0, 3)
-                    .map(v => v.meaning);
-                const options = shuffleArray([correct.meaning, ...wrongAnswers]);
-                return { correct, options };
-            });
+            gameQuestions = shuffled.slice(0, 10);
         }
         
         function startGame() {
@@ -550,51 +678,102 @@
         function showQuestion() {
             const q = gameQuestions[currentQuestion];
             document.getElementById('questionNumber').textContent = `問題 ${currentQuestion + 1} / ${gameQuestions.length}`;
-            document.getElementById('japaneseWord').textContent = q.correct.word;
-            document.getElementById('hintText').textContent = q.correct.reading;
+            document.getElementById('japaneseWord').textContent = q.reading;
             
-            const buttons = document.querySelectorAll('.option-btn');
-            buttons.forEach((btn, i) => {
-                btn.textContent = q.options[i];
-                btn.classList.remove('correct', 'wrong');
-                btn.disabled = false;
+            const sentence = q.sentence.replace('_____', '<span class="blank" id="answerBlank">_____</span>');
+            document.getElementById('sentenceBlank').innerHTML = sentence;
+            
+            const wrongOptions = shuffleArray(vocabularyData.filter(v => v.word !== q.word).slice(0, 3));
+            const options = shuffleArray([q, ...wrongOptions]);
+            
+            const select = document.getElementById('optionSelect');
+            select.innerHTML = '<option value="">請選擇答案...</option>';
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.word;
+                option.textContent = `${opt.word} (${opt.meaning})`;
+                select.appendChild(option);
             });
+            
+            select.dataset.correct = q.word;
+            
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('optionSelect').disabled = false;
         }
         
-        function selectAnswer(index) {
-            const q = gameQuestions[currentQuestion];
-            const buttons = document.querySelectorAll('.option-btn');
-            const selected = buttons[index];
-            const correctAnswer = q.correct.meaning;
+        function submitAnswer() {
+            const select = document.getElementById('optionSelect');
+            const selectedValue = select.value;
+            const correctValue = select.dataset.correct;
             
-            buttons.forEach(btn => btn.disabled = true);
-            
-            if (selected.textContent === correctAnswer) {
-                selected.classList.add('correct');
-                score += 10;
-                playSound('correct');
-            } else {
-                selected.classList.add('wrong');
-                buttons.forEach(btn => {
-                    if (btn.textContent === correctAnswer) {
-                        btn.classList.add('correct');
-                    }
-                });
-                playSound('wrong');
+            if (!selectedValue) {
+                alert('請選擇答案！');
+                return;
             }
             
-            answered++;
-            updateDisplay();
+            const blank = document.getElementById('answerBlank');
+            select.disabled = true;
+            document.getElementById('submitBtn').disabled = true;
             
+            if (selectedValue === correctValue) {
+                blank.textContent = selectedValue;
+                blank.classList.add('correct');
+                score += 10;
+                answered++;
+                playSound('correct');
+                updateDisplay();
+                
+                setTimeout(() => {
+                    nextQuestion();
+                }, 1000);
+            } else {
+                blank.textContent = selectedValue;
+                blank.classList.add('wrong');
+                answered++;
+                playSound('wrong');
+                updateDisplay();
+                
+                setTimeout(() => {
+                    showPopup(false, selectedValue, gameQuestions[currentQuestion].word, gameQuestions[currentQuestion].meaning);
+                }, 500);
+            }
+        }
+        
+        function showPopup(isCorrect, selected, correct, meaning) {
+            const popup = document.getElementById('popupOverlay');
+            const icon = document.getElementById('popupIcon');
+            const title = document.getElementById('popupTitle');
+            const explanation = document.getElementById('popupExplanation');
+            
+            if (isCorrect) {
+                icon.textContent = '✅';
+                icon.className = 'popup-icon correct';
+                title.textContent = '答對了！';
+                title.className = 'popup-title correct';
+                explanation.innerHTML = `正確！<br><strong>${correct}</strong> 的意思是 "${meaning}"`;
+            } else {
+                icon.textContent = '❌';
+                icon.className = 'popup-icon wrong';
+                title.textContent = '答錯了！';
+                title.className = 'popup-title wrong';
+                explanation.innerHTML = `你選了：<strong>${selected}</strong><br>正確答案是：<strong>${correct}</strong><br><br>解釋：${meaning}`;
+            }
+            
+            popup.classList.add('show');
+        }
+        
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('show');
+            nextQuestion();
+        }
+        
+        function nextQuestion() {
             currentQuestion++;
-            
-            setTimeout(() => {
-                if (currentQuestion < gameQuestions.length) {
-                    showQuestion();
-                } else {
-                    endGame();
-                }
-            }, 800);
+            if (currentQuestion < gameQuestions.length) {
+                showQuestion();
+            } else {
+                endGame();
+            }
         }
         
         function updateDisplay() {
@@ -646,8 +825,15 @@
         function restartGame() {
             document.getElementById('endScreen').classList.add('hidden');
             document.getElementById('timer').classList.remove('timer-warning');
+            document.getElementById('popupOverlay').classList.remove('show');
             startGame();
         }
+        
+        document.getElementById('optionSelect').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
     </script>
 </body>
 </html>
