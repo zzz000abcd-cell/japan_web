@@ -700,20 +700,38 @@
             return text;
         }
 
-        // Read question and each option sequentially with small delays
+        function extractJapanese(text) {
+            return text.replace(/\s*\(.*?\)/g, '').trim();
+        }
+
+        // Read question and each option sequentially - wait for question to finish before options
         async function autoSpeakCurrent() {
             if (!('speechSynthesis' in window)) return;
             stopSpeaking();
             const q = questions[currentQuestionIndex];
-            // speak the question first
-            speakText(q.question, 'ja-JP', 1);
-            // after a short delay, speak options one by one
-            const baseDelay = 1600;
-            q.options.forEach((opt, i) => {
-                setTimeout(() => {
-                    speakText(opt, 'ja-JP', 1);
-                }, baseDelay + i * 900);
-            });
+            const japaneseQuestion = extractJapanese(q.question);
+            
+            function speakQuestionAndOptions() {
+                const utter = new SpeechSynthesisUtterance(japaneseQuestion);
+                utter.lang = 'ja-JP';
+                utter.rate = 1;
+                const voice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja')) ||
+                              voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja-jp')) ||
+                              voices[0];
+                if (voice) utter.voice = voice;
+                
+                utter.onend = function() {
+                    q.options.forEach((opt, i) => {
+                        setTimeout(() => {
+                            speakText(opt, 'ja-JP', 1);
+                        }, i * 1200);
+                    });
+                };
+                
+                window.speechSynthesis.speak(utter);
+            }
+            
+            speakQuestionAndOptions();
         }
 
         function showResult() {
