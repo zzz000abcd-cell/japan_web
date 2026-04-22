@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>祇園文化詞彙遊戲</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --primary-pink: #ff6b8b;
+            --primary-blue: #3498db;
+            --primary-green: #2ecc71;
+            --primary-purple: #9b59b6;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #16213e;
+            --card-bg: rgba(30, 30, 60, 0.9);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary-red);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-pink));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: white;
+            background: rgba(220, 53, 69, 0.2);
+        }
+        
+        .game-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-box {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #bdc3c7;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-pink);
+        }
+        
+        .stat-value.timer {
+            color: var(--primary-red);
+        }
+        
+        .stat-value.score {
+            color: var(--primary-green);
+        }
+        
+        .timer-warning {
+            animation: pulse 0.5s infinite;
+            color: #ff0000 !important;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .question-number {
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .japanese-word {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .hint-text {
+            font-size: 1.1rem;
+            color: #bdc3c7;
+            font-style: italic;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .option-btn {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(52, 152, 219, 0.1));
+            border: 2px solid var(--primary-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option-btn:hover {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.4), rgba(52, 152, 219, 0.2));
+            transform: translateY(-3px);
+        }
+        
+        .option-btn.correct {
+            background: linear-gradient(135deg, var(--primary-green), #27ae60);
+            border-color: var(--primary-green);
+            animation: correctPulse 0.5s;
+        }
+        
+        .option-btn.wrong {
+            background: linear-gradient(135deg, var(--primary-red), #c0392b);
+            border-color: var(--primary-red);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        
+        .start-screen, .end-screen {
+            text-align: center;
+            padding: 60px 30px;
+        }
+        
+        .start-screen h2, .end-screen h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .start-screen p, .end-screen p {
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            margin-bottom: 30px;
+        }
+        
+        .start-btn, .restart-btn {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-pink));
+            border: none;
+            color: white;
+            padding: 20px 50px;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
+        }
+        
+        .start-btn:hover, .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(220, 53, 69, 0.5);
+        }
+        
+        .final-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary-green);
+            margin: 30px 0;
+        }
+        
+        .celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--primary-red);
+            animation: fall 3s linear forwards;
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .trophy-animation {
+            font-size: 8rem;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .footer {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 30px;
+            text-align: center;
+            margin-top: 60px;
+            border-top: 2px solid var(--primary-red);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: white;
+            background: rgba(220, 53, 69, 0.2);
+        }
+        
+        .copyright {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo-img">祇</div>
+            <div class="logo-text">祇園文化詞彙遊戲</div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">首頁</a>
+            <a href="vocabulary.html" class="nav-link">詞彙表</a>
+            <a href="vocabulary-game.html" class="nav-link active">詞彙遊戲</a>
+        </div>
+    </nav>
+    
+    <div class="game-container">
+        <div class="start-screen" id="startScreen">
+            <h2>🎌 祇園文化詞彙挑戰 🎌</h2>
+            <p>在限時60秒內回答儘可能多的詞彙問題！</p>
+            <p>答對得10分，答錯不扣分</p>
+            <button class="start-btn" onclick="startGame()">開始遊戲</button>
+        </div>
+        
+        <div class="game-area hidden" id="gameArea">
+            <div class="game-header">
+                <div class="stat-box">
+                    <div class="stat-label">時間</div>
+                    <div class="stat-value timer" id="timer">60</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">分數</div>
+                    <div class="stat-value score" id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">答題</div>
+                    <div class="stat-value" id="answered">0</div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">問題 1 / 10</div>
+                <div class="japanese-word" id="japaneseWord">茶屋</div>
+                <div class="hint-text" id="hintText">這是什麼意思？</div>
+                <div class="options-grid" id="optionsGrid">
+                    <button class="option-btn" onclick="selectAnswer(0)">選項 A</button>
+                    <button class="option-btn" onclick="selectAnswer(1)">選項 B</button>
+                    <button class="option-btn" onclick="selectAnswer(2)">選項 C</button>
+                    <button class="option-btn" onclick="selectAnswer(3)">選項 D</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="end-screen hidden" id="endScreen">
+            <div class="trophy-animation">🏆</div>
+            <h2>遊戲完成！</h2>
+            <p>你的最終分數</p>
+            <div class="final-score" id="finalScore">0</div>
+            <p id="scoreMessage">太棒了！</p>
+            <button class="restart-btn" onclick="restartGame()">再玩一次</button>
+        </div>
+    </div>
+    
+    <div class="celebration-overlay" id="celebrationOverlay"></div>
+    
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="index.html" class="footer-link">首頁</a>
+            <a href="vocabulary.html" class="footer-link">詞彙表</a>
+            <a href="vocabulary-game.html" class="footer-link">詞彙遊戲</a>
+        </div>
+        <p class="copyright">© 2026 Lai Yu Hin | 祇園文化詞彙遊戲</p>
+    </footer>
+    
+    <script>
+        const vocabularyData = [
+            { word: "茶屋", reading: "chaya", meaning: "傳統日本茶館" },
+            { word: "芸者", reading: "geisha", meaning: "藝妓" },
+            { word: "舞妓", reading: "maiko", meaning: "舞妓（藝妓學徒）" },
+            { word: "お守り", reading: "omamori", meaning: "護身符" },
+            { word: "懐石料理", reading: "kaiseki ryōri", meaning: "懷石料理" },
+            { word: "振袖", reading: "furisode", meaning: "長袖和服" },
+            { word: "手水舎", reading: "temizuya", meaning: "淨手處" },
+            { word: "千本格子", reading: "sengakōshi", meaning: "千本格子窗" },
+            { word: "行道", reading: "gyōdō", meaning: "藝妓道" },
+            { word: "お披露目", reading: "ohirōme", meaning: "出道儀式" },
+            { word: "禿", reading: "kamu", meaning: "禿（未成年舞妓）" },
+            { word: "和食", reading: "washoku", meaning: "和食" },
+            { word: "抹茶", reading: "matcha", meaning: "抹茶" },
+            { word: "花道", reading: "kadō", meaning: "花道" },
+            { word: "書道", reading: "shodō", meaning: "書道" }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = 0;
+        let timeLeft = 60;
+        let timerInterval = null;
+        let audioContext = null;
+        
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        function playSound(type) {
+            if (!audioContext) { initAudio(); }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'correct') {
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.15);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'complete') {
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime + i * 0.15);
+                    gain.gain.setValueAtTime(0.3, audioContext.currentTime + i * 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.15 + 0.4);
+                    osc.start(audioContext.currentTime + i * 0.15);
+                    osc.stop(audioContext.currentTime + i * 0.15 + 0.4);
+                });
+            } else if (type === 'tick') {
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            }
+        }
+        
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        let gameQuestions = [];
+        
+        function generateQuestions() {
+            const shuffled = shuffleArray(vocabularyData);
+            gameQuestions = shuffled.slice(0, 10).map(correct => {
+                const wrongAnswers = shuffleArray(vocabularyData.filter(v => v.word !== correct.word))
+                    .slice(0, 3)
+                    .map(v => v.meaning);
+                const options = shuffleArray([correct.meaning, ...wrongAnswers]);
+                return { correct, options };
+            });
+        }
+        
+        function startGame() {
+            generateQuestions();
+            currentQuestion = 0;
+            score = 0;
+            answered = 0;
+            timeLeft = 60;
+            
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('endScreen').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+            
+            updateDisplay();
+            showQuestion();
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').classList.add('timer-warning');
+                    playSound('tick');
+                }
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        function showQuestion() {
+            const q = gameQuestions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `問題 ${currentQuestion + 1} / ${gameQuestions.length}`;
+            document.getElementById('japaneseWord').textContent = q.correct.word;
+            document.getElementById('hintText').textContent = q.correct.reading;
+            
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach((btn, i) => {
+                btn.textContent = q.options[i];
+                btn.classList.remove('correct', 'wrong');
+                btn.disabled = false;
+            });
+        }
+        
+        function selectAnswer(index) {
+            const q = gameQuestions[currentQuestion];
+            const buttons = document.querySelectorAll('.option-btn');
+            const selected = buttons[index];
+            const correctAnswer = q.correct.meaning;
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (selected.textContent === correctAnswer) {
+                selected.classList.add('correct');
+                score += 10;
+                playSound('correct');
+            } else {
+                selected.classList.add('wrong');
+                buttons.forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+                playSound('wrong');
+            }
+            
+            answered++;
+            updateDisplay();
+            
+            currentQuestion++;
+            
+            setTimeout(() => {
+                if (currentQuestion < gameQuestions.length) {
+                    showQuestion();
+                } else {
+                    endGame();
+                }
+            }, 800);
+        }
+        
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('answered').textContent = answered;
+        }
+        
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('endScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            
+            playSound('complete');
+            showCelebration();
+            
+            const messageEl = document.getElementById('scoreMessage');
+            if (score >= 80) {
+                messageEl.textContent = '太厲害了！你是詞彙大師！';
+            } else if (score >= 50) {
+                messageEl.textContent = '做得很好！繼續努力！';
+            } else {
+                messageEl.textContent = '再練習一下，你會更好的！';
+            }
+        }
+        
+        function showCelebration() {
+            const overlay = document.getElementById('celebrationOverlay');
+            overlay.innerHTML = '';
+            
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#fd79a8'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    overlay.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+        
+        function restartGame() {
+            document.getElementById('endScreen').classList.add('hidden');
+            document.getElementById('timer').classList.remove('timer-warning');
+            startGame();
+        }
+    </script>
+</body>
+</html>
