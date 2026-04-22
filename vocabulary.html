@@ -224,6 +224,28 @@
             font-size: 1.1rem;
             color: white;
             font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .japanese-text:hover {
+            background: rgba(255, 107, 139, 0.2);
+            box-shadow: 0 0 15px rgba(255, 107, 139, 0.3);
+        }
+        
+        .speak-icon {
+            font-size: 0.85rem;
+            color: var(--primary-pink);
+            opacity: 0.7;
+        }
+        
+        .japanese-text:hover .speak-icon {
+            opacity: 1;
         }
         
         .difficulty-badge {
@@ -403,6 +425,8 @@
             <a href="statistics.html" class="nav-link">統計數據</a>
             <a href="methods.html" class="nav-link">學習方式</a>
             <a href="vocabulary.html" class="nav-link active">詞彙表</a>
+            <a href="vocabulary-game.html" class="nav-link">詞彙遊戲</a>
+            <a href="vocabulary-fill.html" class="nav-link">填空遊戲</a>
             <a href="quiz.html" class="nav-link">日本文化測試</a>
             <a href="resources.html" class="nav-link">學習資源</a>
             <a href="gamification.html" class="nav-link">遊戲化學習</a>
@@ -479,70 +503,70 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="japanese-text">茶屋</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('茶屋', event)">茶屋 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>chaya</td>
                             <td>傳統日本茶館</td>
                             <td>祇園地區的特色建築，提供茶道體驗和藝妓表演</td>
                             <td><span class="difficulty-badge difficulty-beginner">初級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">芸者</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('芸者', event)">芸者 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>geisha</td>
                             <td>藝妓</td>
                             <td>傳統日本表演藝術家，精通舞蹈、音樂和茶道</td>
                             <td><span class="difficulty-badge difficulty-beginner">初級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">舞妓</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('舞妓', event)">舞妓 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>maiko</td>
                             <td>舞妓（藝妓學徒）</td>
                             <td>年輕的藝妓學徒，穿著華麗的和服，學習傳統技藝</td>
                             <td><span class="difficulty-badge difficulty-intermediate">中級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">お守り</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('お守り', event)">お守り <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>omamori</td>
                             <td>護身符</td>
                             <td>神社出售的護身符，象徵神明的保護與祝福</td>
                             <td><span class="difficulty-badge difficulty-beginner">初級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">懐石料理</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('懐石料理', event)">懐石料理 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>kaiseki ryōri</td>
                             <td>懷石料理</td>
                             <td>傳統的多道菜日本料理，強調季節性和食材原味</td>
                             <td><span class="difficulty-badge difficulty-advanced">高級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">振袖</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('振袖', event)">振袖 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>furisode</td>
                             <td>長袖和服</td>
                             <td>未婚女性在正式場合穿著的華麗和服，袖子特別長</td>
                             <td><span class="difficulty-badge difficulty-intermediate">中級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">手水舎</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('手水舎', event)">手水舎 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>temizuya</td>
                             <td>淨手處</td>
                             <td>神社入口處的水舍，參拜前淨手淨口的場所</td>
                             <td><span class="difficulty-badge difficulty-intermediate">中級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">地唄</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('地唄', event)">地唄 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>jiuta</td>
                             <td>地歌</td>
                             <td>傳統日本音樂形式，常用於藝妓表演</td>
                             <td><span class="difficulty-badge difficulty-advanced">高級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">京野菜</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('京野菜', event)">京野菜 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>kyōyasai</td>
                             <td>京都蔬菜</td>
                             <td>京都地區特有的傳統蔬菜品種</td>
                             <td><span class="difficulty-badge difficulty-intermediate">中級</span></td>
                         </tr>
                         <tr>
-                            <td><span class="japanese-text">狂言</span></td>
+                            <td><span class="japanese-text" onclick="speakJapanese('狂言', event)">狂言 <i class="fas fa-volume-up speak-icon"></i></span></td>
                             <td>kyōgen</td>
                             <td>狂言（傳統喜劇）</td>
                             <td>日本傳統戲劇形式，與能劇搭配演出的喜劇</td>
@@ -604,6 +628,30 @@
     </footer>
 
     <script>
+        // 日文朗讀功能
+        function speakJapanese(text, event) {
+            event.stopPropagation();
+            
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ja-JP';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const japaneseVoice = voices.find(v => v.lang.includes('ja'));
+                if (japaneseVoice) {
+                    utterance.voice = japaneseVoice;
+                }
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('您的瀏覽器不支持語音合成功能');
+            }
+        }
+        
         // 詞彙分類篩選功能
         function showCategory(category) {
             const categories = {
