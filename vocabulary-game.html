@@ -84,15 +84,37 @@
             transition: all 0.3s ease;
         }
         
-        .nav-link:hover {
+.nav-link:hover {
             color: white;
             background: rgba(220, 53, 69, 0.2);
         }
         
-        .game-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 30px;
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+        }
+        
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary-red);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 6px);
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -6px);
         }
         
         .game-header {
@@ -344,15 +366,67 @@
         .hidden {
             display: none;
         }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px 15px;
+            }
+            
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+                gap: 8px;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-link {
+                padding: 10px;
+                font-size: 1rem;
+                width: 100%;
+            }
+            
+            .logo-text {
+                font-size: 1.3rem;
+            }
+            
+            .logo-img {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .hamburger {
+                display: flex;
+                position: absolute;
+                right: 15px;
+                top: 15px;
+            }
+            
+            .main-container {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="logo-container">
-            <div class="logo-img">祇</div>
+            <img src="logo.png" alt="祇園文化探險家" class="logo-img">
             <div class="logo-text">祇園文化詞彙遊戲</div>
         </div>
-        <div class="nav-links">
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
             <a href="index.html" class="nav-link">首頁</a>
             <a href="statistics.html" class="nav-link">統計數據</a>
             <a href="methods.html" class="nav-link">學習方式</a>
@@ -655,6 +729,24 @@
             document.getElementById('timer').classList.remove('timer-warning');
             startGame();
         }
+        
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            const hamburger = document.querySelector('.hamburger');
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+        
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const navLinks = document.getElementById('navLinks');
+                const hamburger = document.querySelector('.hamburger');
+                if (window.innerWidth <= 768) {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
